@@ -1,0 +1,9 @@
+beam: 0
+optics_scenario: "injection"
+error_scenario: "injection"
+errors: ["MB", "MBRB", "MBRC", "MBRS", "MBX", "MBXW", "MBW", "MQW", "MQTL", "MQMC", "MQX", "MQY", "MQM", "MQML", "MQ"]
+error_seed: 6
+energy: 450e9
+path_machine_config: "/eos/project-c/collimation-team/machine_configurations/LHC_run3/2025/MADX/"
+path_errors: "/eos/project-c/collimation-team/machine_configurations/lhcerrors/LHC/"
+save_path: "lattices/injection_2025_all_wise/"
