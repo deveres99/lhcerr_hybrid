@@ -35,7 +35,13 @@ def install_errors(beam, optics_scenario, errors_scenario, path_errors, errors, 
 
     mad.call(save_path + load_name + ".seq")
 
+    print(type(energy))
+    mad.input(f"Beam,particle=proton,sequence=lhcb{beam},energy={energy*1e-9};")
+
     mad.input(f'''
+System,"ln -fns /afs/cern.ch/eng/lhc/optics/runIII run3opt";
+call,file="run3opt/toolkit/macro.madx";
+
 use, sequence=lhcb{beam};
 
 on_disp = 0;
@@ -80,6 +86,7 @@ beta.ip1=table(twiss,IP1,betx);value,beta.ip1;
     if np.any(np.isin(errors, all_wise_types)):
         mad.input(f'''
 ! disable crossing bumps
+exec, crossing_save;
 exec, crossing_disable;
 
 readtable, file="{path_errors}LHC/rotations_Q2_integral.tab";
@@ -105,7 +112,8 @@ readtable, file="{path_errors}LHC/fidel/injection_errors-emfqcs-{seed}.tfs" ;
             mad.input(f'''
 call, file="{path_errors}LHC/Efcomp_{err}.madx"  ;
 ''')
-            
+    
+    mad.input(f"exec, crossing_restore;")
     mad.input(f"save, sequence=lhcb{beam}, file={save_path + save_name + '.seq'};")
 
     if( beam == 1):
@@ -114,7 +122,7 @@ call, file="{path_errors}LHC/Efcomp_{err}.madx"  ;
         mad_sequence = mad.sequence.lhcb2
 
     # With apertures
-    line = xt.Line.from_madx_sequence(mad_sequence, apply_madx_errors=True, install_apertures=True, deferred_expressions=True)
+    line = xt.Line.from_madx_sequence(mad_sequence, apply_madx_errors=True, enable_field_errors=True, install_apertures=True, deferred_expressions=True)
     line.particle_ref = xp.Particles(p0c=energy, q0=1, mass0=xp.PROTON_MASS_EV)
 
     collimators = [name for name in line.element_names
@@ -159,10 +167,10 @@ call, file="{path_errors}LHC/Efcomp_{err}.madx"  ;
     line.to_json(save_path + save_name + ".json")
     
     # Without apertures
-    line = xt.Line.from_madx_sequence(mad_sequence, apply_madx_errors=True, install_apertures=False, deferred_expressions=True)
+    line = xt.Line.from_madx_sequence(mad_sequence, apply_madx_errors=True, enable_field_errors=True, install_apertures=False, deferred_expressions=True)
     line.particle_ref = xp.Particles(p0c=energy, q0=1, mass0=xp.PROTON_MASS_EV)
 
-    line.to_json(save_path + save_name + "noaper.json")
+    line.to_json(save_path + save_name + "_noaper.json")
 
 
 def main():
@@ -178,8 +186,8 @@ def main():
             errors_scenario=config["errors_scenario"], 
             path_errors=config["path_errors"], 
             errors=config["errors"], 
-            seed=config["seed"], 
-            energy=config["energy"], 
+            seed=config["error_seed"], 
+            energy=float(config["energy"]), 
             save_path=config["save_path"]
         )
         install_errors(
@@ -188,8 +196,8 @@ def main():
             errors_scenario=config["errors_scenario"], 
             path_errors=config["path_errors"], 
             errors=config["errors"], 
-            seed=config["seed"], 
-            energy=config["energy"], 
+            seed=config["error_seed"], 
+            energy=float(config["energy"]), 
             save_path=config["save_path"]
         )
     elif config["beam"] == 1:
@@ -199,8 +207,8 @@ def main():
             errors_scenario=config["errors_scenario"], 
             path_errors=config["path_errors"], 
             errors=config["errors"], 
-            seed=config["seed"], 
-            energy=config["energy"], 
+            seed=config["error_seed"], 
+            energy=float(config["energy"]), 
             save_path=config["save_path"]
         )
     elif config["beam"] == 2:
@@ -210,8 +218,8 @@ def main():
             errors_scenario=config["errors_scenario"], 
             path_errors=config["path_errors"], 
             errors=config["errors"], 
-            seed=config["seed"], 
-            energy=config["energy"], 
+            seed=config["error_seed"], 
+            energy=float(config["energy"]), 
             save_path=config["save_path"]
         )
     else:
