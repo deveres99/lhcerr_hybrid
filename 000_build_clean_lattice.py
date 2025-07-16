@@ -77,7 +77,9 @@ def build_clean_lattice(beam, path_machine_config, scenario, energy, save_path):
     line = xt.Line.from_madx_sequence(mad_sequence, apply_madx_errors=False, install_apertures=False, deferred_expressions=True)
     line.particle_ref = xp.Particles(p0c=energy, q0=1, mass0=xp.PROTON_MASS_EV)
 
-    line.to_json(save_path + save_name + "noaper.json")
+    line.to_json(save_path + save_name + "_noaper.json")
+
+    os.remove("*.tfs")
 
 def main():
     args = parser.parse_args()
