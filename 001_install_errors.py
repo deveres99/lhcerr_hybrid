@@ -26,12 +26,8 @@ def install_errors(beam, optics_scenario, errors_scenario, path_errors, errors, 
     
     mad = Madx()
 
-    if( beam == 1):
-        save_name = f"lhcb1_errors{seed}_{optics_scenario}"
-        load_name = f"lhcb1_clean_{optics_scenario}"
-    else:
-        save_name = f"lhcb2_errors{seed}_{optics_scenario}"
-        load_name = f"lhcb2_clean_{optics_scenario}"
+    save_name = f"lhcb{beam}_errors{seed}_{optics_scenario}"
+    load_name = f"lhcb{beam}_clean_{optics_scenario}"
 
     mad.call(save_path + load_name + ".seq")
 
