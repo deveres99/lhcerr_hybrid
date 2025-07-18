@@ -33,12 +33,12 @@ def install_errors(beam, optics_scenario, errors_scenario, path_errors, errors, 
 
     mad.input(f"Beam,particle=proton,sequence=lhcb{beam},energy={energy*1e-9};")
 
-    mybeam = 1 if beam == 1 else 4 
+    mybeam = 1 if beam == 1 else 4
     mad.input(f'''
 System,"ln -fns /afs/cern.ch/eng/lhc/optics/runIII run3opt";
 call,file="run3opt/toolkit/macro.madx";
               
-mybeam={mybeam};
+mylhcbeam={mybeam};
 
 use, sequence=lhcb{beam};
 
@@ -113,6 +113,10 @@ call, file="{path_errors}LHC/Efcomp_{err}.madx"  ;
     
     mad.input(f"exec, crossing_restore;")
     mad.input(f"save, sequence=lhcb{beam}, file={save_path + save_name + '.seq'};")
+
+    mad.input('''
+system,"rm run3opt";
+''')
 
     if( beam == 1):
         mad_sequence = mad.sequence.lhcb1
